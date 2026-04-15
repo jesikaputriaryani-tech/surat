@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rahasia Panda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --matcha: #ccd5ae;
+            --dark-leaf: #a4ac86;
+            --panda-white: #ffffff;
+            --panda-black: #333333;
+            --blush: #ffafcc;
+            --sky-blue: #e0f2fe;
+            --warm-glow: rgba(255, 255, 190, 0.4);
+            --paper: #fcfaf2;
+            --bg-pattern-color: rgba(0, 0, 0, 0.03); 
+            --letter-pattern-color: rgba(164, 172, 134, 0.06); 
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: #f0ead2; font-family: 'Fredoka', sans-serif; overflow: hidden;
+            transition: background 1s ease;
+            
+            /* Latar Belakang Utama yang Lebih Menarik dengan Gradient & Pola */
+            background-image: 
+                radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%),
+                linear-gradient(30deg, var(--bg-pattern-color) 12%, transparent 12.5%, transparent 87%, var(--bg-pattern-color) 87.5%, var(--bg-pattern-color)),
+                linear-gradient(150deg, var(--bg-pattern-color) 12%, transparent 12.5%, transparent 87%, var(--bg-pattern-color) 87.5%, var(--bg-pattern-color)),
+                linear-gradient(60deg, rgba(255,255,255,0.1) 25%, transparent 25.5%, transparent 75%, rgba(255,255,255,0.1) 75.5%, rgba(255,255,255,0.1));
+            background-size: 100% 100%, 40px 70px, 40px 70px, 40px 70px;
+        }
+
+        /* --- DEKORASI --- */
+        .bamboo-bg {
+            position: absolute; width: 100%; height: 100%; display: flex;
+            justify-content: space-around; opacity: 0.15; z-index: 1; pointer-events: none;
+        }
+        .bamboo-stick { width: 20px; height: 100%; background: var(--dark-leaf); border-radius: 10px; position: relative; }
+        .bamboo-stick::before { content: '🍃'; position: absolute; font-size: 25px; left: -10px; top: 20%; animation: leafSway 5s infinite ease-in-out; }
+        @keyframes leafSway { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+
+        .dust-container { position: absolute; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        .dust { position: absolute; width: 5px; height: 5px; background: white; border-radius: 50%; opacity: 0.3; animation: dustFloat 10s infinite linear; }
+        @keyframes dustFloat {
+            0% { transform: translateY(110vh) translateX(calc(100vw * var(--random-x-start))); opacity: 0; }
+            100% { transform: translateY(-10vh) translateX(calc(100vw * var(--random-x-end))); opacity: 0; }
+        }
+
+        /* --- STAGE & PANDA UTAMA --- */
+        .stage { position: relative; width: 320px; height: 550px; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+        
+        #securityScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0ead2; z-index: 200; 
+            display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
+        }
+        .nose-btn { width: 50px; height: 50px; background: black; border-radius: 50%; margin: 20px auto; cursor: pointer; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        .panda {
+            position: relative; width: 110px; height: 90px; background: var(--panda-white); border-radius: 50% 50% 45% 45%; 
+            box-shadow: 0 10px 0px rgba(0,0,0,0.05); transform: translateX(-200vw) rotate(-720deg); 
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; cursor: pointer; z-index: 20;
+        }
+        .ear { position: absolute; top: -10px; width: 30px; height: 30px; background: var(--panda-black); border-radius: 50%; }
+        .ear.l { left: 0; } .ear.r { right: 0; }
+        .eye-patch { position: absolute; top: 30px; width: 30px; height: 35px; background: var(--panda-black); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .eye-patch.l { left: 15px; transform: rotate(15deg); } .eye-patch.r { right: 15px; transform: rotate(-15deg); }
+        .pupil { width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .nose { position: absolute; top: 55px; width: 10px; height: 6px; background: #000; border-radius: 50%; }
+        .blush { position: absolute; top: 60px; width: 15px; height: 8px; background: var(--blush); border-radius: 50%; opacity: 0.5; }
+        .blush.l { left: 25px; } .blush.r { right: 25px; }
+
+        /* --- SURAT --- */
+        .letter {
+            position: absolute; width: 290px; min-height: 420px; background: var(--paper); padding: 20px; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; transform: scale(0); opacity: 0;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 15; border: 8px double var(--matcha); 
+            display: flex; flex-direction: column; justify-content: center; overflow: hidden;
+            background-image: radial-gradient(var(--letter-pattern-color) 1.5px, transparent 1.5px); background-size: 20px 20px;
+        }
+
+        .page { display: none; position: relative; animation: fadeIn 0.5s ease; z-index: 5; }
+        .page.active { display: block; }
+        .page p { font-size: 14px; line-height: 1.5; color: #444; margin: 10px 0; }
+        .divider { height: 1.5px; width: 40px; background: var(--matcha); margin: 10px auto; border-radius: 2px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .next-btn {
+            background: var(--matcha); border: none; padding: 10px 20px; border-radius: 12px; color: white; 
+            font-weight: 600; cursor: pointer; font-family: 'Fredoka', sans-serif; margin-top: 10px; transition: 0.3s; font-size: 12px;
+        }
+        .next-btn:hover { background: var(--dark-leaf); transform: translateY(-2px); }
+        .start-btn { padding: 12px 25px; background: var(--dark-leaf); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        /* --- MINI PANDA PROFILE (FIXED) --- */
+        .mini-panda-container {
+            margin-top: 25px; display: flex; justify-content: center; align-items: center; width: 100%;
+        }
+        .mini-panda-face {
+            width: 40px; height: 34px; background: #fff; border-radius: 50% 50% 45% 45%; 
+            position: relative; border: 2px solid #ddd; box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+        .mini-ear { position: absolute; width: 14px; height: 14px; background: #333; border-radius: 50%; top: -5px; }
+        .mini-ear.l { left: -2px; } .mini-ear.r { right: -2px; }
+        .mini-eye { position: absolute; width: 10px; height: 12px; background: #333; border-radius: 50%; top: 12px; }
+        .mini-eye.l { left: 8px; transform: rotate(15deg); } .mini-eye.r { right: 8px; transform: rotate(-15deg); }
+        .mini-nose { position: absolute; width: 5px; height: 3px; background: #000; border-radius: 50%; top: 22px; left: 50%; transform: translateX(-50%); }
+
+        /* --- HADIAH --- */
+        .game-container { display: flex; justify-content: space-around; margin-top: 10px; }
+        .box {
+            width: 60px; height: 60px; background: linear-gradient(145deg, var(--matcha), var(--dark-leaf)); border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; font-size: 26px; cursor: pointer; transition: 0.4s; 
+            border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .stage.ready .panda { transform: translateX(0) rotate(0deg); }
+        .stage.open .panda { transform: scale(0.4) translateY(240px); }
+        .stage.open .letter { transform: scale(1) translateY(-30px); opacity: 1; }
+
+        .leaf { position: absolute; pointer-events: none; animation: leafFall 4s linear forwards; z-index: 100; }
+        @keyframes leafFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+        .floating-heart { position: absolute; font-size: 20px; animation: heartUp 3s ease-out infinite; opacity: 0; pointer-events: none; }
+        @keyframes heartUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120px) scale(1.5); opacity: 0; } }
+    </style>
+</head>
+<body id="mainBody">
+
+    <audio id="bgMusic" loop>
+        <source src="https://files.catbox.moe/q9anbr.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="dust-container" id="dustContainer"></div>
+
+    <div id="securityScreen">
+        <h2 style="color: var(--dark-leaf); font-size: 20px;">VERIFIKASI PANDA 🛡️</h2>
+        <p style="color: #555; font-size: 14px;">Klik hidung panda di bawah <br> <b>5 kali</b> untuk membuktikan bahwa kamu manusia gemas.</p>
+        <div class="nose-btn" id="noseClicker" onclick="checkNose()"></div>
+        <p id="clickCount" style="font-weight: 600; font-size: 14px;">Klik: 0/5</p>
+    </div>
+
+    <div class="stage" id="stage">
+        <button class="start-btn" id="startBtn" onclick="startSecurity()">Panggil Panda 🐼</button>
+        
+        <div class="panda" id="pandaBody" onclick="openLetter()">
+            <div class="ear l"></div> <div class="ear r"></div>
+            <div class="eye-patch l"><div class="pupil"></div></div>
+            <div class="eye-patch r"><div class="pupil"></div></div>
+            <div class="nose"></div> <div class="blush l"></div> <div class="blush r"></div>
+        </div>
+
+        <div class="letter" id="letterBox">
+            <div class="page active" id="page1" data-bg="var(--warm-glow)">
+                <h2 style="font-family: 'Pacifico'; color: var(--dark-leaf); margin:0; font-size: 20px;">Akses Diterima!</h2>
+                <div class="divider"></div>
+                <p>Status: 100% Manusia Gemas. ✅<br><br>
+           
+           Hai, ada seseorang yang nitipin pesan rahasia lewat aku loh...</p>
+                <button class="next-btn" onclick="nextPage(1.5)">Eh, Kamu Siapa? 🤔</button>
+            </div>
+
+            <div class="page" id="page1.5" data-bg="#f0fdf4">
+                <h3 style="margin:0; color:var(--dark-leaf); font-size: 18px;">Si Panda Bulat</h3>
+                <p>
+                    Kenalin, aku adalah asisten rahasia paling lucu sejagat raya. Hobiku makan bambu, tidur 18 jam, dan <b>ngintipin orang yang lagi disayang sama pengirim surat ini!</b> 🤭
+                </p>
+                <div class="divider"></div>
+                <button class="next-btn" onclick="nextPage(2)">Apa Pesannya? ✨</button>
+                
+                <div class="mini-panda-container">
+                    <div class="mini-panda-face">
+                        <div class="mini-ear l"></div>
+                        <div class="mini-ear r"></div>
+                        <div class="mini-eye l"></div>
+                        <div class="mini-eye r"></div>
+                        <div class="mini-nose"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="page2" data-bg="var(--sky-blue)">
+                <p>Katanya... makasih banyak ya sudah hadir. Dia cuma mau kamu tahu kalau dunianya jadi jauh lebih seru sejak ada kamu.</p>
+                <div class="divider"></div>
+                <button class="next-btn" onclick="nextPage(3)">Lanjut... 👉</button>
+            </div>
+
+            <div class="page" id="page3" data-bg="#fee2e2">
+                <p>Cukup dengan kamu ada di sini aja, itu sudah jadi hal paling indah yang dia syukuri setiap hari.</p>
+                <p style="font-size: 11px; font-style: italic; color: #888;">(Kamu berharga banget tau!!)</p>
+                <button class="next-btn" onclick="nextPage(4)">Satu lagi... ✨</button>
+            </div>
+
+            <div class="page" id="page4" data-bg="#fef3c7">
+                <p>Terima kasih sudah menetap.. dan bertahan dari segala hal yang sulit. Kamu hebat lebih dari yang kamu kira.</p>
+                <div class="divider"></div>
+                <button class="next-btn" onclick="nextPage(5)">Pesan Terakhir 💌</button>
+            </div>
+
+            <div class="page" id="page5" data-bg="#ddd6fe">
+                <p>Simpan surat ini ya, biar kamu selalu ingat kalau kamu ngga sendirian!<br><br><b style="font-size: 17px; color: #ccd5ae;">F: J!</p>
+                <button class="next-btn" onclick="nextPage(6)">Ambil Hadiah? 🎁</button>
+            </div>
+
+            <div class="page" id="page6" data-bg="#fdfcf0">
+                <h2 style="color: var(--dark-leaf); font-size: 19px; margin: 5px 0;">Panda Gift! 🎁</h2>
+                <p style="font-size: 12.5px;">Pilih satu kotak bambu untuk hadiah dari dia!</p>
+                <div class="game-container" id="giftArea">
+                    <div class="box" onclick="playGame(this, 'Es Krim 🍦')">🎁</div>
+                    <div class="box" onclick="playGame(this, 'Pelukan Panda 🫂')">🎁</div>
+                    <div class="box" onclick="playGame(this, 'Cokelat 🍫')">🎁</div>
+                </div>
+                <p id="resultText" style="font-weight: 600; margin-top: 10px; color: var(--dark-leaf); font-size: 14px; min-height: 18px;"></p>
+                <button class="next-btn" id="toFinalBtn" style="display:none; margin: 5px auto;" onclick="nextPage(7)">Buka Pesan Penutup 🌸</button>
+            </div>
+
+            <div class="page" id="page7" data-bg="#fff0f5">
+               <h2 style="font-family: 'Pacifico'; color: #ff85a2; font-size: 19px; margin:0;">Sampai Jumpa!</h2>
+                <div class="divider" style="background: #ff85a2;"></div>
+                <p>Kalo mau dapet hadiahnya, tagih ke dia ya!<br><br>
+                Semoga selalu ada alasan untuk kamu tersenyum<br><br><b>papayyy! 🐼👋</b></p>
+                <p style="font-size: 11px; color: #aaa;">(Klik panda di bawah untuk menutup surat)</p>
+                <div class="divider" style="width: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        const body = document.getElementById('mainBody');
+        let count = 0;
+
+        function startSecurity() { document.getElementById('startBtn').style.display = 'none'; document.getElementById('securityScreen').style.display = 'flex'; }
+
+        function checkNose() {
+            count++; document.getElementById('clickCount').innerHTML = "Klik: " + count + "/5";
+            const btn = document.getElementById('noseClicker');
+            btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "scale(1)", 100);
+            if(count >= 5) {
+                document.getElementById('securityScreen').innerHTML = "<h2 style='color: var(--dark-leaf);'>AKSES DITERIMA! 🔓</h2><p>Membuka surat rahasia...</p>";
+                setTimeout(() => { document.getElementById('securityScreen').style.display = 'none'; document.getElementById('stage').classList.add('ready'); music.play().catch(e => console.log("Audio blocked.")); }, 1000);
+            }
+        }
+
+        function openLetter() {
+            if(document.getElementById('stage').classList.contains('open')) { document.getElementById('stage').classList.remove('open'); body.style.background = "#f0ead2"; } 
+            else { document.getElementById('stage').classList.add('open'); changeBodyBackground(); createLeafShower(); }
+        }
+
+        function nextPage(num) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const currentPage = document.getElementById('page' + num);
+            currentPage.classList.add('active'); changeBodyBackground(currentPage.getAttribute('data-bg')); createLeafShower();
+        }
+
+        function changeBodyBackground(color) { body.style.background = color || "#f0ead2"; }
+
+        function createDustDots() {
+            const container = document.getElementById('dustContainer');
+            for(let i=0; i<30; i++) {
+                const dust = document.createElement('div'); dust.className = 'dust';
+                dust.style.setProperty('--random-x-start', Math.random()); dust.style.setProperty('--random-x-end', Math.random());
+                dust.style.animationDelay = (Math.random() * 10) + 's'; container.appendChild(dust);
+            }
+        }
+        createDustDots();
+
+        function playGame(el, prize) {
+            if(el.classList.contains('opened')) return;
+            document.querySelectorAll('.box').forEach(box => { box.classList.add('opened'); box.innerHTML = '🍃'; box.style.opacity = '0.5'; });
+            el.innerHTML = prize.split(' ')[1]; el.style.opacity = '1'; el.style.background = 'var(--blush)'; el.style.transform = 'scale(1.1) rotate(360deg)';
+            document.getElementById('resultText').innerHTML = "SELAMAT! Kamu dapet: " + prize; document.getElementById('toFinalBtn').style.display = 'block';
+            setInterval(() => {
+                const heart = document.createElement('div'); heart.className = 'floating-heart'; heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 80 + 10 + '%'; heart.style.bottom = '20%';
+                document.getElementById('page6').appendChild(heart); setTimeout(() => heart.remove(), 3000);
+            }, 400);
+            for(let i=0; i<20; i++) { setTimeout(createLeaf, i * 50); }
+        }
+
+        function createLeafShower() { for(let i=0; i<8; i++) { setTimeout(createLeaf, i * 100); } }
+
+        function createLeaf() {
+            const leaf = document.createElement('div'); leaf.className = 'leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌸';
+            leaf.style.left = Math.random() * 100 + 'vw'; leaf.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            leaf.style.animationDuration = (Math.random() * 2 + 2) + 's'; document.body.appendChild(leaf);
+            setTimeout(() => leaf.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
